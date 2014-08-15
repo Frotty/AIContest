@@ -1,0 +1,21 @@
+package _Init
+import ClosureTimers
+import InitArenas
+import EventManager
+import Match
+import CustomInit
+
+function initMap()
+	initArenas()
+	initEventManager()
+	customInit()
+	doAfter(2., () -> begin
+		new Match(EventManager.containers.get(0), EventManager.containers.get(1))
+		..start()
+	end)
+	
+	
+
+init
+	nullTimer(() -> initMap())
+

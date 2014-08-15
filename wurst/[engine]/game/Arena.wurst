@@ -1,0 +1,132 @@
+package Arena
+import LinkedList
+import ClosureTimers
+import UnitDataAPI
+import Terrain
+
+public class Arena
+	vec2 leftBot
+	vec2 leftTop
+	vec2 rightTop
+	vec2 rightBot
+	vec2 aiOneStart
+	vec2 aiTwoStart
+	vec2 mirrorA
+	vec2 mirrorB
+	
+	LinkedList<destructable> trees
+	LinkedList<unit> goldmines
+	
+	real mapsize = 0
+	int goldmineCount = 0
+	int treeCount = 0
+
+	construct(vec2 leftBot, vec2 rightTop)
+		this.leftBot = leftBot
+		this.leftTop = vec2(leftBot.x, rightTop.y)
+		this.rightTop = rightTop
+		this.rightBot = vec2(rightTop.x, leftBot.y)
+		mapsize = (rightTop.x-leftBot.x) * (rightTop.y-leftBot.y)
+		
+	function isInside(vec2 p) returns boolean
+		return p.x > leftBot.x and p.x < rightBot.x and p.y > leftBot.y and p.y < leftTop.y
+		
+	function populateTerrain()
+		printNote("Populating Arena with mapsize: " + mapsize.toString())
+		printNote("Marking Starting Positions...")
+		chooseStartPoints()
+		printNote("Marking Starting Positions...Done")
+		printNote("Digging Goldmines...")
+		placeGoldmines()
+		printNote("Digging Goldmines...Done")
+		printNote("Planting Trees...")
+		plantTrees()
+		printNote("Planting Trees...Done")
+		printNote("Population Done!")
+		
+	private function chooseStartPoints()
+		let rand = GetRandomInt(0,1)
+		if rand == 0
+			aiOneStart = leftBot.polarOffset(leftBot.angleTo(rightTop), 128)
+			aiTwoStart = rightTop.polarOffset(rightTop.angleTo(leftBot), 128)
+			mirrorA = leftTop
+			mirrorB = rightBot
+		else
+			aiOneStart = rightBot.polarOffset(rightBot.angleTo(leftTop), 128)
+			aiTwoStart = leftTop.polarOffset(leftTop.angleTo(rightBot), 128)
+			mirrorA = leftBot
+			mirrorB = rightTop
+			
+		
+	private function placeMirroredDestructable(vec2 pos, int id)
+		let dist = SquareRoot(pos.distToSegmentSquared(aiOneStart, aiTwoStart))
+		var angl = angle(0)
+		if pos.distToVecSquared(mirrorA) > pos.distToVecSquared(mirrorB)
+			angl = mirrorB.angleTo(mirrorA)
+		else
+			angl = mirrorA.angleTo(mirrorB)
+		let sndpos = pos.polarOffset(angl, dist*2)
+		if not IsTerrainPathable(pos.x, pos.y, PATHING_TYPE_PEONHARVESTPATHING) and not IsTerrainPathable(sndpos.x, sndpos.y, PATHING_TYPE_PEONHARVESTPATHING)
+			trees.add(CreateDestructable(id, pos.x, pos.y, GetRandomReal(0,360), GetRandomReal(0.8, 1.2), -1))
+			trees.add(CreateDestructable(id, sndpos.x, sndpos.y, GetRandomReal(0,360), GetRandomReal(0.8, 1.2), -1))
+		else
+			doAfter(.0, () -> begin
+				placeMirroredDestructable(vec2(GetRandomReal(leftBot.x, rightBot.x), GetRandomReal(leftBot.y, rightTop.y)), 'VTlt')
+			end)
+			
+	private function placeMirroredUnit(vec2 pos, int id)
+		let dist = SquareRoot(pos.distToSegmentSquared(aiOneStart, aiTwoStart))
+		var angl = angle(0)
+		if pos.distToVecSquared(mirrorA) > pos.distToVecSquared(mirrorB)
+			angl = mirrorB.angleTo(mirrorA)
+		else
+			angl = mirrorA.angleTo(mirrorB)
+		let sndpos = pos.polarOffset(angl, dist*2)
+		if not IsTerrainPathable(pos.x, pos.y, PATHING_TYPE_BUILDABILITY) and not IsTerrainPathable(sndpos.x, sndpos.y, PATHING_TYPE_BUILDABILITY)
+			goldmines.add(CreateUnit(DUMMY_PLAYER, id, pos.x, pos.y, bj_UNIT_FACING))
+			goldmines.add(CreateUnit(DUMMY_PLAYER, id, sndpos.x, sndpos.y, bj_UNIT_FACING))
+		else
+			doAfter(.0, () -> begin
+				placeMirroredUnit(vec2(GetRandomReal(leftBot.x, rightBot.x), GetRandomReal(leftBot.y, rightTop.y)), GOLDMINE_ID)
+			end)
+	
+	private function placeGoldmines()
+		if goldmineCount > 0
+			placeMirroredUnit(vec2(GetRandomReal(leftBot.x, rightBot.x), GetRandomReal(leftBot.y, rightTop.y)), GOLDMINE_ID)
+			goldmineCount--
+			if goldmineCount == 0
+				return
+		else
+			goldmineCount = (SquareRoot(mapsize) / 500).toInt()
+			printNote("    Goldmine count: " + goldmineCount.toString())	
+		
+		doAfter(.0, () -> begin
+			placeGoldmines()
+		end)
+	
+	private function plantTrees()
+		if treeCount > 0
+			placeMirroredDestructable(vec2(GetRandomReal(leftBot.x, rightBot.x), GetRandomReal(leftBot.y, rightTop.y)), 'VTlt')
+			treeCount--
+			if treeCount == 0
+				return
+		else
+			treeCount = (mapsize / 250000).toInt()
+			printNote("    Tree count: " + treeCount.toString())	
+		
+		doAfter(.0, () -> begin
+			plantTrees()
+		end)
+		
+	ondestroy
+		for t in trees
+			if t != null
+				RemoveDestructable(t)
+		destroy trees
+		for g in goldmines
+			g.remove()
+		destroy goldmines
+				
+		
+
+	

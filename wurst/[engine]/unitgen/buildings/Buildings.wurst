@@ -1,0 +1,53 @@
+package Buildings
+import LinkedListModule
+import UnitObjEditing
+import ObjectIds
+
+import UnitDataAPI
+
+
+
+public class CBuilding extends Building
+	use LinkedListModule
+	BuildingDefinition def
+
+	
+	construct(int origId, int newId, string name)
+		def = new BuildingDefinition(newId, origId)
+		def..setName(name)
+		this.id = newId
+
+	function generate()
+		def..setPathingMap(pathmap)
+		..setHitPointsMaximumBase(hp)
+		..setScalingValue(scale)
+		..setGroundTexture("")
+		..setSelectionScale(selectionscale)
+		..setGoldCost(goldcost)
+		..setRepairGoldCost((goldcost/4).round())
+		..setLumberCost(lumbercost)
+		..setRepairLumberCost((lumbercost/4).round())
+		..setBuildTime(buildtime)
+		..setFoodProduced(foodproduced)
+		
+	
+// ============
+
+@compiletime function generateBuildings()
+	var b = new CBuilding('hhou', CAMP_ID, "Encampment")
+	b.def.setUnitsTrained(idInteger2IdString(WORKER_ID) + "," + idInteger2IdString(AXEMAN_ID))
+	BUILDING_CAMP = b
+	
+	b = new CBuilding('hgtw', ARROWTOWER_ID, "Arrow Tower")
+	BUILDING_ARROWTOWER = b
+	
+	b = new CBuilding('ngol', GOLDMINE_ID, "Goldmine")
+	b.scale = 0.6
+	b.selectionscale = 0.5
+	
+	BUILDING_GOLDMINE = b
+	
+	var e = CBuilding.first
+	while e != null
+		e.generate()
+		e = e.next

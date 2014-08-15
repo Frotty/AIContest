@@ -1,0 +1,15 @@
+package WurstExportedObjects_w3a
+import ObjEditingNatives
+
+//modifiedTable: 
+
+@compiletime function create_w3a_!e@$()
+	let u = createObjectDefinition("w3a", '!e@$', 'Adef')
+	u.setLvlDataInt("wurs", 0, 0, 42)
+	u.setLvlDataString("anam", 0, 0, "Deindex Detect")
+	u.setLvlDataString("ansf", 0, 0, "(Unit Indexer)")
+	u.setLvlDataString("acat", 0, 0, "")
+	u.setLvlDataString("aart", 0, 0, "")
+	u.setLvlDataString("arac", 0, 0, "unknown")
+
+

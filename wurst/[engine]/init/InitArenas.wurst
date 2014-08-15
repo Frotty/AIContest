@@ -1,0 +1,14 @@
+package InitArenas
+import public Arena
+
+public Arena SMALL_ARENA
+public Arena MEDIUM_ARENA
+public Arena BIG_ARENA
+
+public function initArenas()
+	SMALL_ARENA = new Arena(vec2(512,512), vec2(2048, 2048))
+	SMALL_ARENA.populateTerrain()
+	MEDIUM_ARENA = new Arena(vec2(-2048,512), vec2(0, 2048))
+	MEDIUM_ARENA.populateTerrain()
+	BIG_ARENA = new Arena(vec2(-2048,-2560), vec2(2048, 0))
+	BIG_ARENA.populateTerrain()

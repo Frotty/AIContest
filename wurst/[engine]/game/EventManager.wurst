@@ -1,0 +1,67 @@
+package EventManager
+import public AIController
+import ClosureTimers
+import UnitDataAPI
+import public LinkedList
+import RegisterEvents
+import Match
+
+public constant AI_ONE = Player(0)
+public constant AI_TWO = Player(1)
+
+
+public class AIContainer
+	AIController controller
+	int points = 0
+	
+	construct(AIController controller)
+		this.controller = controller
+
+public class EventManager
+	static LinkedList<AIContainer> containers = new LinkedList<AIContainer>()
+
+
+	static function registerController(AIController controller)
+		containers.add(new AIContainer(controller))
+		
+	static function onUnitTrain(unit u)
+		if u.getOwner() == AI_ONE
+			currentMatch.aiOne.controller.onUnitTrain(u)
+		else if u.getOwner() == AI_TWO
+			currentMatch.aiTwo.controller.onUnitTrain(u) 
+		
+	static function onConstructBuilding(unit u)
+		if u.getTypeId() == CAMP_ID
+			u.addAbility('Argl')
+		if u.getOwner() == AI_ONE
+			currentMatch.aiOne.controller.onConstructBuilding(u)
+		else if u.getOwner() == AI_TWO
+			currentMatch.aiTwo.controller.onConstructBuilding(u) 
+		
+	static function onStartBuilding(unit u)
+		if u.getOwner() == AI_ONE
+			doAfter(0.1, () -> currentMatch.aiOne.controller.onConstructStart(u))
+			print("called")
+		else if u.getOwner() == AI_TWO
+			doAfter(0.1, () -> currentMatch.aiTwo.controller.onConstructStart(u))
+			print("called2")
+			
+	static function onUnitAttacked(unit u, unit a)
+		if u.getOwner() == AI_ONE
+			currentMatch.aiOne.controller.onUnitAttacked(u, a)
+		else if u.getOwner() == AI_TWO
+			currentMatch.aiTwo.controller.onUnitAttacked(u, a) 
+			
+	static function onUnitDeath(unit u)
+		if u.getOwner() == AI_ONE
+			currentMatch.aiOne.controller.onUnitDeath(u)
+		else if u.getOwner() == AI_TWO
+			currentMatch.aiTwo.controller.onUnitDeath(u) 
+		
+		
+public function initEventManager()
+	registerPlayerUnitEvent(EVENT_PLAYER_UNIT_TRAIN_FINISH, () -> EventManager.onUnitTrain(GetTrainedUnit()))
+	registerPlayerUnitEvent(EVENT_PLAYER_UNIT_CONSTRUCT_FINISH, () -> EventManager.onConstructBuilding(GetConstructedStructure()))
+	registerPlayerUnitEvent(EVENT_PLAYER_UNIT_CONSTRUCT_START, () -> EventManager.onStartBuilding(GetConstructingStructure()))
+	registerPlayerUnitEvent(EVENT_PLAYER_UNIT_ATTACKED, () -> EventManager.onUnitAttacked(GetTriggerUnit(), GetAttacker()))
+	registerPlayerUnitEvent(EVENT_PLAYER_UNIT_DEATH, () -> EventManager.onUnitDeath(GetTriggerUnit()))

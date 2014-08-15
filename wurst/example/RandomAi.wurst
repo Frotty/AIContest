@@ -1,0 +1,152 @@
+package RandomAi
+import EventManager
+import LastOrder
+import Match
+import UnitDataAPI
+import LinkedList
+import Arena
+import initlater RABase
+
+public class RandomAIController implements AIController
+	LinkedList<unit> peasants
+	LinkedList<unit> army
+	player plyr
+	LinkedList<RABase> bases = new LinkedList<RABase>()
+	
+	boolean hasBase = false
+	boolean baseBuild = false
+	boolean producingPeasant = false
+	boolean peasantInProduction = false
+	
+	function getName() returns string
+		return "Random AI"
+		
+	function getDecentCampPoint(vec2 startPos) returns vec2
+		real cdist = 20000000
+		unit closest = null
+		for g in currentMatch.currentArena.goldmines
+			let dist = g.getPos().distToVecSquared(startPos)
+			if dist < cdist
+				cdist = dist
+				closest = g
+				
+		var x = closest.getX() + GetRandomReal(-256, 256)
+		var y = closest.getY() + GetRandomReal(-256, 256)
+		while currentMatch.currentArena.isInside(vec2(x,y)) and IsTerrainPathable(x, y, PATHING_TYPE_BUILDABILITY)
+			addEffect("Abilities\\Weapons\\SpiritOfVengeanceMissile\\SpiritOfVengeanceMissile.mdl", vec2(x,y))
+			x = closest.getX() + GetRandomReal(-256, 256)
+			y = closest.getY() + GetRandomReal(-256, 256)
+			print("not found")
+			
+		return vec2(x,y)
+		
+	int checkidles = 0
+	boolean axe_in_production = false
+	
+	int timeToEx 
+	
+	override function onUnitDeath(unit dyingUnit)
+		if dyingUnit.getTypeId() == WORKER_ID
+			peasants.remove(dyingUnit)
+		else
+			army.remove(dyingUnit)
+	
+	function update()
+		timeToEx--
+		if timeToEx < 0
+			timeToEx = 120
+			hasBase = false
+			baseBuild = false
+		
+		if not hasBase and not baseBuild
+			print("no base")
+			let pos = getDecentCampPoint(peasants.get(0).getPos())
+			print("    got point")
+			if IssueBuildOrderById(peasants.get(0), CAMP_ID,  pos.x, pos.y)
+				baseBuild = true
+				print("    issued")
+				
+
+			
+		
+		if army.getSize() > 1
+			for a in army
+				if hasNoOrder(a)
+					if plyr == AI_ONE
+						a.issuePointOrder("attack", currentMatch.currentArena.mirrorB)
+					else
+						a.issuePointOrder("attack", currentMatch.currentArena.mirrorA)
+		
+		
+		checkidles ++
+		if checkidles > 12
+			checkidles = 0
+			checkIdles()
+			
+	function checkIdles()
+		real cdist = 20000000
+		destructable closest = null
+		unit cg = null
+		for p in peasants
+			if hasNoOrder(p)
+				if plyr.getState(PLAYER_STATE_RESOURCE_LUMBER) < plyr.getState(PLAYER_STATE_RESOURCE_GOLD)
+					for t in currentMatch.currentArena.trees
+						let dist = vec2(t.getX(), t.getY()).distToVecSquared(p.getPos())
+						if dist < cdist
+							cdist = dist
+							closest = t
+					p.issueTargetOrder("harvest", closest)
+					print("TREE ORDERED")
+				else
+					for g in currentMatch.currentArena.goldmines
+						let dist = g.getPos().distToVecSquared(p.getPos())
+						if dist < cdist
+							cdist = dist
+							cg = g
+					p.issueTargetOrder("smart", cg)
+			
+		
+	function initialize(player p)
+		this.plyr = p
+		peasants = new LinkedList<unit>()
+		army = new LinkedList<unit>()
+		timeToEx = 120
+		
+	function onUnitTrain(unit trainedUnit)
+		if trainedUnit.getTypeId() == WORKER_ID
+			peasants.add(trainedUnit)
+			print("order: " + OrderId2String(trainedUnit.getPastOrders().dequeue().id))
+			peasantInProduction = false
+		else
+			army.add(trainedUnit)
+			axe_in_production = false
+		checkIdles()
+		(GetTriggerUnit().getUserData() castTo RABase).doSomething(this)
+		
+	function onConstructBuilding(unit constructedBuilding)
+		if constructedBuilding.getTypeId() == CAMP_ID
+			bases.add(new RABase(constructedBuilding, this))
+			hasBase = true
+	
+	function hasNoOrder(unit u) returns boolean
+		return GetUnitCurrentOrder(u) < 1
+//		let orders = u.getPastOrders()
+//		let order = orders.dequeue()
+//		if OrderId2String(order.id).length() < 1
+//			return true
+//		return orders == null or order == null or order.otype == OrderType.IMMEDIATE
+			
+			
+	function onConstructStart(unit constructedBuilding)
+		print("on construct")
+		for p in peasants
+			if hasNoOrder(p)
+				print("order")
+				p.issueTargetOrder("smart", constructedBuilding)
+		
+	function onUnitAttacked(unit attackedUnit, unit attacker)
+
+public function initRandomAi()
+	EventManager.registerController(new RandomAIController())
+	EventManager.registerController(new RandomAIController())
+	

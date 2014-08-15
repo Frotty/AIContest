@@ -1,0 +1,18 @@
+package RABase
+import RandomAi
+import UnitDataAPI
+
+public class RABase
+	unit base
+	
+	construct(unit u, RandomAIController ai)
+		this.base = u
+		base.setUserData(this castTo int)
+		doSomething(ai)
+		
+	function doSomething(RandomAIController ai)
+		if ai.peasants.getSize() < 8
+			base.issueImmediateOrderById(WORKER_ID)
+		else
+			base.issueImmediateOrderById(AXEMAN_ID)
+		

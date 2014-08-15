@@ -1,0 +1,57 @@
+									Welcome to the
+
+	 █████╗ ██╗       ██████╗ ██████╗ ███╗   ██╗████████╗███████╗███████╗████████╗
+	██╔══██╗██║      ██╔════╝██╔═══██╗████╗  ██║╚══██╔══╝██╔════╝██╔════╝╚══██╔══╝
+	███████║██║█████╗██║     ██║   ██║██╔██╗ ██║   ██║   █████╗  ███████╗   ██║   
+	██╔══██║██║╚════╝██║     ██║   ██║██║╚██╗██║   ██║   ██╔══╝  ╚════██║   ██║   
+	██║  ██║██║      ╚██████╗╚██████╔╝██║ ╚████║   ██║   ███████╗███████║   ██║   
+	╚═╝  ╚═╝╚═╝       ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   ╚══════╝╚══════╝   ╚═╝
+
+									-readme
+									
+This file will explain the rules of the contest.
+You can find documentation on how to engine works and how to make your own
+AIController in the DOC.txt file.
+
+===========
+==~Rules~==
+===========
+----------
+A. AI-Script-Rules
+----------
+
+1. Your AI must consist of a controller-class that extends the AIController interface (api/AIController.wurst)
+
+2. All Events fired inside your AI must be fired from the provided functions in that interface
+
+3. All engine-information you are allowed to use has an accessor in the [api] folder.
+	• This means you never need to enter the [engine] folder for data
+	• All other information has to be gathered via "Get" natives
+	• It is not allowed to gather "invisible" data about the enemy.
+	   This means all data that a human wouldn't know if he/she would
+	   be playing the game.
+	
+4. The AIController is only allowed to execute the following actions:
+	• Order Units
+	• Construct Buildings
+	• Train Units
+	
+5. All mechanically-inflicting actions to the widgets in the match or the match itself are forbidden.
+   This includes next to others:
+   	• Adjusting unit properties
+   	• Adjusting variables of the engine-code
+   	• Modifying the engine
+   	• Cheating
+   	
+----------  	
+B. Submission-Rules
+----------
+
+In order for an entry to be valid it has to comply with the following points
+	• Compile without errors
+	• Adhere to the above mentioned scripting-rules
+	• Must be able to beat the example-script "RandomAI.wurst" persistently
+  	  (This means winning 2 or more matches in a 3-match-round)
+
+Depending on the violation the entry may receive minus points or be disqualified from the contest.
+

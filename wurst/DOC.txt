@@ -1,0 +1,29 @@
+██████╗  ██████╗  ██████╗██╗   ██╗███╗   ███╗███████╗███╗   ██╗████████╗ █████╗ ████████╗██╗ ██████╗ ███╗   ██╗
+██╔══██╗██╔═══██╗██╔════╝██║   ██║████╗ ████║██╔════╝████╗  ██║╚══██╔══╝██╔══██╗╚══██╔══╝██║██╔═══██╗████╗  ██║
+██║  ██║██║   ██║██║     ██║   ██║██╔████╔██║█████╗  ██╔██╗ ██║   ██║   ███████║   ██║   ██║██║   ██║██╔██╗ ██║
+██║  ██║██║   ██║██║     ██║   ██║██║╚██╔╝██║██╔══╝  ██║╚██╗██║   ██║   ██╔══██║   ██║   ██║██║   ██║██║╚██╗██║
+██████╔╝╚██████╔╝╚██████╗╚██████╔╝██║ ╚═╝ ██║███████╗██║ ╚████║   ██║   ██║  ██║   ██║   ██║╚██████╔╝██║ ╚████║
+╚═════╝  ╚═════╝  ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚═╝  ╚═╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝
+
+This is the Documentation about the game-enviroment (called engine), the API (Resources the engine provides)
+and how to use both of them to create your very own AI.
+
+ _____         _         
+|   __|___ ___|_|___ ___ 
+|   __|   | . | |   | -_|
+|_____|_|_|_  |_|_|_|___|
+          |___|           
+The Engine stored in the wurst/[engine] folder controls the basic flow of the game.
+I won't go much into detail here, as you will not need to access or modify 
+anything inside the Engine in order to create your AI, but you need it to view
+information on the units and buildings.
+
+All units/buildings are generated in the /unitgen folder.
+Buildings and Units have their seperate Files. 
+The files themselves should be pretty self-explanatory - if you take a look
+at the bottom the values of the seperate units are evident.
+
+The /game folder contains packages that control the game-flow
+(Arenas, Matches)
+
+ 

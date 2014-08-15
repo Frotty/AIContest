@@ -1,0 +1,53 @@
+package Units
+import UnitObjEditing
+import LinkedListModule
+import UnitDataAPI
+
+
+public class CUnit extends Unit
+	use LinkedListModule
+	UnitDefinition def
+	
+	
+	construct(int origId, int newId, string name)
+		def = new UnitDefinition(newId, origId)
+		def.setName(name)
+		this.id = newId
+		
+		
+	function generate()
+		def..setHitPointsMaximumBase(hp)
+		..setSpeedBase(movespeed)
+		..setAttack1DamageBase(2)
+		..setAttack1CooldownTime(cooldown)
+		..setGoldCost(goldcost)
+		..setLumberCost(lumbercost)
+		..setBuildTime(buildtime)
+		
+	
+// ===================
+
+@compiletime function initUnits()
+	var b = new CUnit('hpea', WORKER_ID, "Worker")
+	b.def.setStructuresBuilt(idInteger2IdString(CAMP_ID))
+	UNIT_WORKER = b
+	
+	b = new CUnit('hmil', AXEMAN_ID, "Axeman")
+	b.damage = 4
+	b.cooldown = 0.45
+	
+	UNIT_AXEMAN = b
+	
+	b = new CUnit('earc', ARCHER_ID, "Archer")
+	b.damage = 2
+	b.hp = 8
+	b.cooldown = 0.45
+	
+	UNIT_ARCHER = b
+	
+	var e = CUnit.first
+	while e != null
+		e.generate()
+		e = e.next
+	
+	

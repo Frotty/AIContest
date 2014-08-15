@@ -1,0 +1,12 @@
+package CustomInit
+import RandomAi
+import EventManager
+
+
+
+/**
+	Add your custom init here and register the Controller
+*/
+public function customInit()
+	initRandomAi()
+	EventManager.registerController(new RandomAIController())

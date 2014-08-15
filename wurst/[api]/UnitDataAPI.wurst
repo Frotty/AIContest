@@ -1,0 +1,40 @@
+package UnitDataAPI
+
+public abstract class Unit
+	int id
+	int hp = 10
+	int movespeed = 300
+	int damage = 2
+	real cooldown = 0.5
+	int goldcost = 5
+	int lumbercost = 0
+	int buildtime = 5
+	
+public abstract class Building
+	int id
+	int hp = 50
+	int goldcost = 10
+	int lumbercost = 5
+	real scale = 1.
+	real selectionscale = 1.
+	string pathmap = "PathTextures\\4x4Unbuildable.tga"
+	string modelpath = "buildings\\other\\Tent\\Tent.mdl"
+	int buildtime = 10
+	int foodproduced = 10
+
+public constant WORKER_ID = 'xwrk'
+public constant AXEMAN_ID = 'xaxe'
+public constant ARCHER_ID = 'xarc'
+
+public constant CAMP_ID = 'xcmp'
+public constant ARROWTOWER_ID = 'xatw'
+public constant GOLDMINE_ID = 'xglm'
+
+public Building BUILDING_CAMP
+public Building BUILDING_ARROWTOWER
+public Building BUILDING_GOLDMINE
+
+public Unit UNIT_WORKER
+public Unit UNIT_AXEMAN
+public Unit UNIT_ARCHER
+

@@ -1,0 +1,71 @@
+package Match
+import initlater EventManager
+import InitArenas
+import UnitDataAPI
+
+public Match currentMatch = null
+
+public class Match
+	AIContainer aiOne
+	AIContainer aiTwo
+	int tick = 0
+	int round = 1
+	Arena currentArena
+	
+	construct(AIContainer aiOne, AIContainer aiTwo)
+		this.aiOne = aiOne
+		this.aiTwo = aiTwo
+		
+	function start()
+		if currentMatch == null
+			printNote("Starting Match between: " + aiOne.controller.getName() + " and " + aiTwo.controller.getName())
+			SetPlayerName(AI_ONE, aiOne.controller.getName())
+			SetPlayerName(AI_TWO, aiTwo.controller.getName())
+			AI_ONE.setState(PLAYER_STATE_RESOURCE_GOLD, 20)
+			AI_ONE.setState(PLAYER_STATE_RESOURCE_LUMBER, 10)
+			AI_TWO.setState(PLAYER_STATE_RESOURCE_GOLD, 20)
+			AI_TWO.setState(PLAYER_STATE_RESOURCE_LUMBER, 10)
+			currentMatch = this
+			startRound()
+		else
+			error("Other Match in progress")
+		
+	function startRound()
+		round++
+		if round > 3
+			endMatch()
+			return
+		else
+			switch round
+				case 1
+					currentArena = SMALL_ARENA
+				case 2
+					currentArena = MEDIUM_ARENA
+				case 3
+					currentArena = BIG_ARENA
+		aiOne.controller.initialize(AI_ONE)
+		aiTwo.controller.initialize(AI_TWO)
+		for i = 0 to 2
+			let dist = GetRandomReal(300, 420)
+			let angl = currentArena.mirrorA.angleTo(currentArena.mirrorB)
+			let off = angle(GetRandomReal(-0.1, 0.1))
+			aiOne.controller.onUnitTrain(createUnit(AI_ONE, WORKER_ID, currentArena.mirrorA.polarOffset(angl+off, dist), angle(0)))
+			aiTwo.controller.onUnitTrain(createUnit(AI_TWO, WORKER_ID, currentArena.mirrorB.polarOffset(angl-angle(180*DEGTORAD)+off, dist), angle(0)))
+		t.startPeriodic(0.25, () -> currentMatch.updateAIs())
+		
+	timer t = CreateTimer()
+		
+	function endMatch()
+		printNote("Ending Match between: " + aiOne.controller.getName() + " and " + aiTwo.controller.getName())
+		currentMatch = null
+	
+	function updateAIs()
+		if tick == 0
+			tick = 1
+			aiOne.controller.update()
+			aiTwo.controller.update()
+		else if tick == 1
+			tick = 0
+			aiTwo.controller.update()
+			aiOne.controller.update()
+		

@@ -1,0 +1,19 @@
+package AIController
+
+public interface AIController
+
+	function getName() returns string
+
+	function update()
+		
+	function initialize(player p)
+		
+	function onUnitTrain(unit trainedUnit)
+		
+	function onConstructBuilding(unit constructedBuilding)
+		
+	function onConstructStart(unit constructedBuilding)
+		
+	function onUnitAttacked(unit attackedUnit, unit attacker)
+
+	function onUnitDeath(unit dyingUnit)
